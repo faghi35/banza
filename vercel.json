@@ -1,4 +1,10 @@
-{
+﻿{
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "framework": "nextjs"
+  "framework": "nextjs",
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "https://banza-ai.onekana-agency.com/api/$1"
+    }
+  ]
 }
