@@ -1,0 +1,369 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================================================
+   Banza AI — Design System Ultra-Premium
+   Palette stricte : BLEU FONCÉ · NOIR · BLANC
+   ============================================================ */
+
+@layer base {
+  /* Mode clair : Fond blanc pur & gris perle, typo noir profond, accents bleu foncé */
+  :root {
+    color-scheme: light;
+    --canvas: 250 251 254;        /* Blanc épuré très doux */
+    --surface: 255 255 255;       /* Blanc pur */
+    --surface-2: 242 246 252;     /* Blanc perle bleuté */
+    --surface-3: 231 237 247;     /* Teinte perle intermédiaire */
+    --line: 226 233 243;          /* Bordure fine claire */
+    --line-strong: 202 214 231;   /* Bordure accentuée claire */
+    --ink: 7 11 18;               /* Noir profond pour texte principal */
+    --ink-2: 55 68 89;            /* Noir satiné pour sous-titres */
+    --ink-3: 110 126 151;         /* Gris ardoise estompé */
+    
+    /* BLEU FONCÉ / NAVY */
+    --accent: 10 37 74;           /* Bleu foncé noble / Deep Navy */
+    --accent-strong: 5 21 45;     /* Bleu nuit très foncé */
+    --accent-soft: 232 240 252;   /* Lavis bleu doux sur blanc */
+    --accent-muted: 211 226 248;  /* Bleu pastel léger */
+    
+    /* Déclinaisons fonctionnelles harmonisées */
+    --danger: 175 25 35;
+    --success: 10 37 74;          /* Bleu foncé */
+    --warning: 80 50 15;
+    --code-bg: 5 9 16;            /* Noir bleuté pour blocs de code */
+  }
+
+  /* Mode sombre : Fond noir obsidian, typo blanc éclatant, accents bleu foncé lumineux */
+  .dark {
+    color-scheme: dark;
+    --canvas: 4 6 11;             /* Noir d'encre / Obsidian */
+    --surface: 8 12 20;           /* Noir de surface */
+    --surface-2: 15 21 34;        /* Noir bleuté intermédiaire */
+    --surface-3: 22 31 49;        /* Noir bleuté éclairci */
+    --line: 28 39 60;             /* Lignes d'interface discrètes */
+    --line-strong: 46 63 94;      /* Lignes de contour marquées */
+    --ink: 255 255 255;           /* Blanc pur pour texte principal */
+    --ink-2: 195 208 226;         /* Blanc cassé doux */
+    --ink-3: 125 142 168;         /* Blanc estompé */
+    
+    /* BLEU FONCÉ / LUMINOUS NAVY */
+    --accent: 30 75 160;          /* Bleu foncé vibrant */
+    --accent-strong: 45 105 215;  /* Bleu intense */
+    --accent-soft: 12 28 58;      /* Fond bleu nuit immersif */
+    --accent-muted: 20 44 88;     /* Bleu nuit intermédiaire */
+    
+    /* Déclinaisons fonctionnelles harmonisées */
+    --danger: 235 85 95;
+    --success: 75 145 250;        /* Bleu éclatant */
+    --warning: 220 160 60;
+    --code-bg: 2 4 8;             /* Noir absolu pour le code */
+  }
+
+  * {
+    @apply border-line;
+  }
+
+  /* Transition douce et fluide lors du changement de thème */
+  body, .card, aside, header, input, textarea, button, nav a, .btn, .nav-item, .icon-btn {
+    transition-property: background-color, border-color, color, box-shadow, transform;
+    transition-duration: 0.22s;
+    transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  html,
+  body {
+    height: 100%;
+  }
+
+  body {
+    @apply bg-canvas font-sans text-ink antialiased;
+    font-optical-sizing: auto;
+    font-feature-settings: "tnum", "ss01", "ss02";
+    position: relative;
+    background-color: rgb(var(--canvas));
+    background-image:
+      radial-gradient(55rem 40rem at 15% -10%, rgb(var(--accent) / 0.12), transparent 60%),
+      radial-gradient(50rem 35rem at 90% 5%, rgb(var(--accent) / 0.08), transparent 55%),
+      radial-gradient(45rem 35rem at 50% 115%, rgb(var(--accent) / 0.06), transparent 60%);
+    background-attachment: fixed;
+  }
+
+
+  ::selection {
+    background: rgb(var(--accent) / 0.30);
+    color: rgb(var(--ink));
+  }
+
+  :focus-visible {
+    outline: 2px solid rgb(var(--accent));
+    outline-offset: 2px;
+  }
+}
+
+@layer components {
+  /* Barres de défilement ultra-fines */
+  .scroll-thin::-webkit-scrollbar {
+    width: 5px;
+    height: 5px;
+  }
+  .scroll-thin::-webkit-scrollbar-thumb {
+    border-radius: 9999px;
+    background: rgb(var(--line-strong) / 0.7);
+  }
+  .scroll-thin::-webkit-scrollbar-thumb:hover {
+    background: rgb(var(--ink-3));
+  }
+  .scroll-thin::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .scroll-thin {
+    scrollbar-width: thin;
+    scrollbar-color: rgb(var(--line-strong) / 0.7) transparent;
+  }
+
+  /* Champs de texte élégants */
+  .input {
+    @apply w-full rounded-xl border border-line-strong bg-surface px-3.5 py-2.5 text-[15px] text-ink placeholder:text-ink-3 outline-none transition
+      focus:border-accent focus:ring-4 focus:ring-accent/15;
+  }
+
+  /* Boutons Design System 3 Couleurs */
+  .btn {
+    @apply inline-flex cursor-pointer select-none items-center justify-center gap-2 rounded-xl text-sm font-semibold outline-none transition
+      focus-visible:ring-4 focus-visible:ring-accent/25 disabled:cursor-not-allowed disabled:opacity-40 active:scale-[0.98];
+  }
+  
+  .btn-primary {
+    @apply relative inline-flex cursor-pointer select-none items-center justify-center gap-2 overflow-hidden rounded-xl text-sm font-semibold transition bg-accent text-white shadow-card hover:bg-accent-strong hover:shadow-card-hover focus-visible:ring-4 focus-visible:ring-accent/25 disabled:opacity-40 disabled:cursor-not-allowed active:scale-[0.98];
+  }
+  .btn-primary::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(105deg, transparent 30%, rgb(255 255 255 / 0.22) 50%, transparent 70%);
+    background-size: 200% 100%;
+    transform: translateX(-100%);
+    transition: transform 0.6s ease;
+    pointer-events: none;
+  }
+  .btn-primary:hover::after {
+    transform: translateX(100%);
+  }
+
+  .btn-soft {
+    @apply inline-flex cursor-pointer select-none items-center justify-center gap-2 rounded-xl text-sm font-semibold transition bg-accent-soft text-accent border border-accent/20 active:scale-[0.98] hover:bg-accent-muted focus-visible:ring-4 focus-visible:ring-accent/25 disabled:opacity-40 disabled:cursor-not-allowed;
+  }
+  .btn-ghost {
+    @apply inline-flex cursor-pointer select-none items-center justify-center gap-2 rounded-xl text-sm font-semibold transition text-ink-2 active:scale-[0.98] hover:bg-surface-2 hover:text-ink focus-visible:ring-4 focus-visible:ring-accent/25 disabled:opacity-40 disabled:cursor-not-allowed;
+  }
+  .btn-subtle {
+    @apply inline-flex cursor-pointer select-none items-center justify-center gap-2 rounded-xl text-sm font-semibold transition border border-line-strong bg-surface text-ink-2 active:scale-[0.98] hover:bg-surface-2 hover:text-ink focus-visible:ring-4 focus-visible:ring-accent/25 disabled:opacity-40 disabled:cursor-not-allowed;
+  }
+  .btn-danger {
+    @apply inline-flex cursor-pointer select-none items-center justify-center gap-2 rounded-xl text-sm font-semibold transition bg-danger text-white active:scale-[0.98] hover:brightness-110 focus-visible:ring-4 focus-visible:ring-danger/25 disabled:opacity-40 disabled:cursor-not-allowed;
+  }
+
+  /* Badges & Pills */
+  .badge {
+    @apply inline-flex items-center gap-1 rounded-full border border-line bg-surface-2 px-2.5 py-0.5 text-[11.5px] font-medium text-ink-2;
+  }
+  .badge-accent {
+    @apply inline-flex items-center gap-1 rounded-full border border-accent/25 bg-accent-soft px-2.5 py-0.5 text-[11.5px] font-medium text-accent;
+  }
+  .badge-success {
+    @apply inline-flex items-center gap-1 rounded-full border border-accent/30 bg-accent-soft px-2.5 py-0.5 text-[11.5px] font-medium text-accent;
+  }
+  .badge-danger {
+    @apply inline-flex items-center gap-1 rounded-full border border-danger/30 bg-danger/10 px-2.5 py-0.5 text-[11.5px] font-medium text-danger;
+  }
+
+  /* Cards avec effet verre / profondeur */
+  .card {
+    @apply rounded-2xl border border-line bg-surface shadow-card transition-all duration-300 hover:border-line-strong hover:shadow-card-hover;
+  }
+
+  .card-glass {
+    @apply rounded-2xl border border-line/80 bg-surface/80 backdrop-blur-xl shadow-card transition-all duration-300 hover:border-accent/40 hover:shadow-card-hover;
+  }
+
+  /* Navigation Sidebar */
+  .nav-item {
+    @apply relative flex w-full items-center gap-2.5 rounded-xl px-3 py-2 text-[13.5px] font-medium text-ink-2 transition-all duration-200
+      hover:bg-surface-2 hover:text-ink hover:translate-x-0.5;
+  }
+  .nav-item::before {
+    content: "";
+    position: absolute;
+    left: -0.5rem;
+    top: 20%;
+    height: 60%;
+    width: 3px;
+    border-radius: 9999px;
+    background: rgb(var(--accent));
+    transform: scaleY(0);
+    transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .nav-item.active::before {
+    transform: scaleY(1);
+  }
+  .nav-item.active {
+    @apply bg-accent-soft text-accent font-semibold;
+  }
+
+  /* Bouton d'icône */
+  .icon-btn {
+    @apply inline-flex h-9 w-9 items-center justify-center rounded-xl transition active:scale-95;
+  }
+
+  /* Animations d'entrée */
+  .message-enter {
+    animation: fade-in 0.25s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+  .welcome-enter {
+    animation: fade-in-up 0.45s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+  .stagger-enter > * {
+    animation: fade-in-up 0.45s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+  .stagger-enter > *:nth-child(1) { animation-delay: 60ms; }
+  .stagger-enter > *:nth-child(2) { animation-delay: 120ms; }
+  .stagger-enter > *:nth-child(3) { animation-delay: 180ms; }
+  .stagger-enter > *:nth-child(4) { animation-delay: 240ms; }
+
+  .bubble-in {
+    animation: scale-in 0.28s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  /* Halo et anneau lumineux premium pour le logo */
+  .brand-halo {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .brand-halo::before {
+    content: "";
+    position: absolute;
+    inset: -30%;
+    border-radius: 9999px;
+    background: radial-gradient(circle, rgb(var(--accent) / 0.35), transparent 70%);
+    animation: pulse-glow 4s ease-in-out infinite;
+    z-index: 0;
+    pointer-events: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ============================================================
+   Markdown IA — Typographie & Code
+   ============================================================ */
+.md-content {
+  @apply text-[15px] leading-[1.75] break-words;
+  font-feature-settings: normal;
+}
+.md-content > *:first-child {
+  margin-top: 0 !important;
+}
+.md-content > *:last-child {
+  margin-bottom: 0 !important;
+}
+.md-content p {
+  @apply my-3;
+}
+.md-content h1,
+.md-content h2,
+.md-content h3,
+.md-content h4 {
+  @apply mb-2.5 mt-6 font-bold text-ink tracking-tight;
+}
+.md-content h1 { @apply text-xl; }
+.md-content h2 { @apply text-lg; }
+.md-content h3 { @apply text-base; }
+.md-content h4 { @apply text-[15px]; }
+.md-content ul {
+  @apply my-3 list-disc space-y-1.5 pl-6;
+}
+.md-content ol {
+  @apply my-3 list-decimal space-y-1.5 pl-6;
+}
+.md-content li {
+  @apply my-0.5;
+}
+.md-content li::marker {
+  @apply text-ink-3;
+}
+.md-content a {
+  @apply font-medium text-accent underline decoration-accent/40 underline-offset-2 hover:decoration-accent hover:text-accent-strong;
+}
+.md-content blockquote {
+  @apply my-3.5 border-l-[3px] border-accent/70 bg-accent-soft/30 py-2 pl-3.5 pr-3 text-ink-2 italic rounded-r-lg;
+}
+.md-content table {
+  @apply my-4 w-full border-collapse overflow-hidden rounded-xl text-sm shadow-card;
+}
+.md-content th,
+.md-content td {
+  @apply border border-line px-3.5 py-2 text-left align-top;
+}
+.md-content th {
+  @apply bg-surface-2 font-semibold text-ink;
+}
+.md-content tr:nth-child(even) td {
+  @apply bg-surface-2/40;
+}
+.md-content code:not(pre code) {
+  @apply rounded-md bg-accent-soft/80 px-1.5 py-0.5 font-mono text-[13px] text-accent font-semibold;
+  border: 1px solid rgb(var(--line));
+}
+.md-content pre {
+  @apply my-0;
+}
+.md-content strong {
+  @apply font-semibold text-ink;
+}
+.md-content hr {
+  @apply my-6 border-line;
+}
+
+/* Indicateur de saisie "en train d'écrire" */
+@keyframes blink-dot {
+  0%, 80%, 100% { opacity: 0.25; transform: translateY(0) scale(0.9); }
+  40% { opacity: 1; transform: translateY(-3px) scale(1.1); }
+}
+.typing-dot {
+  animation: blink-dot 1.2s infinite ease-in-out;
+}
+.typing-dot:nth-child(2) { animation-delay: 0.18s; }
+.typing-dot:nth-child(3) { animation-delay: 0.36s; }
+
+/* Curseur clignotant de streaming */
+.stream-caret {
+  animation: stream-blink 0.9s step-start infinite;
+}
+@keyframes stream-blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+/* Scrollbar du bloc de code */
+.code-scroll::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+.code-scroll::-webkit-scrollbar-thumb {
+  border-radius: 9999px;
+  background: rgb(255 255 255 / 0.20);
+}
+.code-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: rgb(255 255 255 / 0.20) transparent;
+}

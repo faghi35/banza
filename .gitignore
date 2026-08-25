@@ -1,0 +1,40 @@
+# dependencies
+/node_modules
+/.pnp
+.pnp.js
+
+# next.js
+/.next/
+/out/
+
+# production
+/build
+
+# misc
+.DS_Store
+*.pem
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# env files
+.env*.local
+.env*.local.*
+.env.production.local
+
+# fichiers de test / traces locales (ne jamais publier)
+cookie.txt
+conv.json
+msg.json
+reg.json
+resolve.out
+resolve.err
+build*.log
+server.log
+*.jar
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
