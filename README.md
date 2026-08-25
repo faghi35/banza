@@ -21,7 +21,7 @@ NEXT_PUBLIC_API_URL=http://localhost/banza-ai-api
 
 ## Déploiement (production)
 
-Architecture : **Frontend → Vercel (HTTPS)** · **Backend PHP → http://banza-ai.hopetrade-rdc.com**
+Architecture : **Frontend → Vercel (HTTPS)** · **Backend PHP → https://banza-ai.onekana-agency.com**
 
 ### Principe : proxy API (recommandé)
 
