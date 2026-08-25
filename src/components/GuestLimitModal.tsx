@@ -50,7 +50,7 @@ export default function GuestLimitModal({
     "Historique permanent & reprise illimitée",
     "Conversations sauvegardées en ligne",
     "Synchronisation multi-écrans (Mobile & PC)",
-    "50 messages gratuits chaque jour",
+    "200 messages gratuits chaque jour",
     "Recherche web temps réel & IA de pointe",
   ];
 

@@ -86,7 +86,7 @@ export default function DashboardPage() {
   const firstName = user && !user.is_guest ? user.name.split(" ")[0] : null;
 
   const used = usage?.used ?? (isGuest ? 0 : (user?.usage?.used ?? 0));
-  const limit = usage?.limit ?? (isGuest ? 10 : (user?.usage?.limit ?? 50));
+  const limit = usage?.limit ?? (isGuest ? 10 : (user?.usage?.limit ?? 200));
   const remaining = usage?.remaining ?? Math.max(0, limit - used);
 
   const stats = [
@@ -228,7 +228,7 @@ export default function DashboardPage() {
               <h3 className="text-base font-bold text-ink">Conservez vos conversations dans le cloud</h3>
               <p className="mt-1.5 max-w-lg text-sm leading-relaxed text-ink-2">
                 Vous utilisez actuellement Banza AI en mode invité ({used} / {limit} messages consommés aujourd&apos;hui). Créez un compte gratuit
-                pour débloquer 50 messages quotidiens et synchroniser votre historique sur tous vos appareils.
+                pour débloquer 200 messages quotidiens et synchroniser votre historique sur tous vos appareils.
               </p>
               <div className="mt-5 flex flex-col gap-2.5 sm:flex-row">
                 <Link href="/register" className="btn-primary px-5 py-2.5">Créer un compte gratuit</Link>
