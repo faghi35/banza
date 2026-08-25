@@ -3,8 +3,8 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: {
-    default: "Banza AI — Votre assistant intelligent",
-    template: "%s · Banza AI",
+    default: "Banza  — Votre assistant intelligent",
+    template: "%s · Banza ",
   },
   description:
     "Banza AI : assistant conversationnel moderne. Posez une question, demandez une analyse, écrivez du code.",

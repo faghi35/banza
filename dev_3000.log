@@ -41,3 +41,14 @@
 
  ✓ Starting...
  ✓ Ready in 68.5s
+(node:26148) [DEP0060] DeprecationWarning: The `util._extend` API is deprecated. Please use Object.assign() instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ ○ Compiling / ...
+ ✓ Compiled /admin/settings in 140.7s (1094 modules)
+ ✓ Compiled in 3.8s (535 modules)
+ ✓ Compiled in 5.5s (535 modules)
+ ✓ Compiled in 4.3s (535 modules)
+ ✓ Compiled in 611ms (536 modules)
+ ✓ Compiled in 501ms (536 modules)
+ ✓ Compiled in 360ms (536 modules)
+ ✓ Compiled in 713ms (536 modules)

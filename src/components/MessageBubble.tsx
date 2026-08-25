@@ -11,6 +11,7 @@ import {
   IconThumbsUp,
 } from "./icons";
 import type { ChatMessage } from "@/lib/types";
+import { sanitizeAssistantAnswer } from "@/lib/sanitize";
 
 interface Props {
   message: ChatMessage;
@@ -24,6 +25,8 @@ export default function MessageBubble({ message, streaming = false, onRegenerate
   const [voted, setVoted] = useState<"up" | "down" | null>(null);
   const ref = useRef<HTMLDivElement>(null);
 
+  const content = isUser ? message.content : sanitizeAssistantAnswer(message.content);
+
   useEffect(() => {
     if (streaming && ref.current) {
       ref.current.scrollIntoView({ block: "end", behavior: "smooth" });
@@ -32,7 +35,7 @@ export default function MessageBubble({ message, streaming = false, onRegenerate
 
   async function copyMessage() {
     try {
-      await navigator.clipboard.writeText(message.content);
+      await navigator.clipboard.writeText(content);
       setCopied(true);
       setTimeout(() => setCopied(false), 1500);
     } catch {
@@ -115,9 +118,9 @@ export default function MessageBubble({ message, streaming = false, onRegenerate
           </div>
         )}
 
-        {message.content ? (
+        {content ? (
           <div className="message-enter">
-            <MarkdownRenderer content={message.content} />
+            <MarkdownRenderer content={content} />
             {streaming && <span className="stream-caret ml-1 inline-block h-[1.15rem] w-[6px] rounded-sm bg-accent align-text-bottom" />}
           </div>
         ) : (
