@@ -32,7 +32,7 @@ requêtes `GET/POST/PATCH/DELETE /api/*` sont réécrites par `next.config.mjs`
 | Environnement | Cible (`BACKEND_ORIGIN`) |
 |---|---|
 | Dev (`next dev`) | `http://localhost/banza-ai-api` |
-| Prod (`next start` / Vercel) | `http://banza-ai.hopetrade-rdc.com` |
+| Prod (`next start` / Vercel) | `https://banza-ai.onekana-agency.com` |
 
 Avantages :
 - **Plus de CORS** en production (le navigateur reste sur votre domaine).
@@ -52,7 +52,7 @@ Avantages :
 
 1. Importer le dépôt `banza-ai` sur Vercel (framework **Next.js** auto).
 2. Env : `NEXT_PUBLIC_API_URL=` (vide). `BACKEND_ORIGIN` est optionnelle
-   (le fallback prod pointe déjà vers `http://banza-ai.hopetrade-rdc.com`).
+   (le fallback prod pointe déjà vers `https://banza-ai.onekana-agency.com`).
 3. `npm run build` (Vercel le fait seul). Puis `vercel --prod`.
 
 ### Backend PHP
@@ -62,7 +62,7 @@ Avantages :
 3. Copier `deploy/.env.production.example` → `.env`, renseigner la base +
    `NVIDIA_API_KEY`.
 4. Importer `database/schema.sql`.
-5. Tester : `curl http://banza-ai.hopetrade-rdc.com/api/health` → `200`.
+5. Tester : `curl https://banza-ai.onekana-agency.com/api/health` → `200`.
 
 > Voir aussi : `banza-ai-api/deploy/DEPLOIEMENT.md` (guide complet).
 

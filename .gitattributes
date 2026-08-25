@@ -1,0 +1,22 @@
+# ============================================================
+# Normalisation des fins de ligne
+# LF partout (standard Node/Next.js, compatible Vercel/Linux),
+# CRLF uniquement pour les scripts Windows.
+# ============================================================
+* text=auto eol=lf
+
+# Scripts Windows : CRLF obligatoire
+*.bat text eol=crlf
+*.cmd text eol=crlf
+*.ps1 text eol=crlf
+
+# Binaires : jamais touchés
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.webp binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
