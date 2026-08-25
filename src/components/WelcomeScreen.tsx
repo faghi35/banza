@@ -11,6 +11,8 @@ import {
 
 interface Props {
   onSend: (text: string) => void;
+  /** Prénom de l'utilisateur connecté (absent en mode invité). */
+  name?: string;
 }
 
 const SUGGESTIONS = [
@@ -25,10 +27,11 @@ const EXAMPLES = [
   "Quelles sont les meilleures pratiques pour optimiser la performance d'une application web ?",
 ];
 
-export default function WelcomeScreen({ onSend }: Props) {
+export default function WelcomeScreen({ onSend, name }: Props) {
   const hour = new Date().getHours();
   const greeting =
     hour < 5 ? "Bonne nuit" : hour < 12 ? "Bonjour" : hour < 18 ? "Bon après-midi" : "Bonsoir";
+  const firstName = name && name.trim() ? name.trim().split(/\s+/)[0] : undefined;
 
   return (
     <div className="welcome-enter relative flex min-h-full flex-1 flex-col items-center justify-center overflow-hidden px-4 py-8 text-center sm:px-6">
@@ -46,11 +49,17 @@ export default function WelcomeScreen({ onSend }: Props) {
       </div>
 
       <h1 className="mt-6 text-2xl font-extrabold tracking-tight text-ink sm:text-3xl">
-        {greeting} <span className="inline-block animate-wave">👋</span>
+        {firstName ? `${greeting}, ${firstName}` : greeting}{" "}
+        <span className="inline-block animate-wave">👋</span>
       </h1>
       <p className="mt-2 max-w-md text-balance text-[15px] leading-relaxed text-ink-2 sm:text-base">
-        Je suis <span className="font-bold text-ink">Banza AI</span>. Posez votre
-        question, demandez une analyse ou écrivez du code.
+        {firstName ? (
+          <>Ravi de vous revoir <span className="font-bold text-ink">{firstName}</span>. Posez votre
+            question, demandez une analyse ou écrivez du code.</>
+        ) : (
+          <>Je suis <span className="font-bold text-ink">Banza AI</span>. Posez votre
+            question, demandez une analyse ou écrivez du code.</>
+        )}
       </p>
 
       {/* Boutons de suggestions rapides */}

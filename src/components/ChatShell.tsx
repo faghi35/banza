@@ -503,7 +503,10 @@ export default function ChatShell() {
           <main className="scroll-thin flex-1 overflow-y-auto overscroll-contain">
             {messages.length === 0 ? (
               <div className="flex min-h-full flex-1">
-                <WelcomeScreen onSend={handleSend} />
+                <WelcomeScreen
+                  onSend={handleSend}
+                  name={!isGuest && user ? user.name : undefined}
+                />
               </div>
             ) : (
               <div className="mx-auto w-full max-w-3xl px-4 py-6 sm:px-6">
