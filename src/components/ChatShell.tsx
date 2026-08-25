@@ -9,7 +9,6 @@ import GuestLimitModal from "./GuestLimitModal";
 import MessageBubble from "./MessageBubble";
 import Sidebar from "./Sidebar";
 import WelcomeScreen from "./WelcomeScreen";
-import PWAInstallGate from "./PWAInstallGate";
 import {
   IconArrowUpRight,
   IconGlobe,
@@ -69,19 +68,6 @@ export default function ChatShell() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [usage, setUsage] = useState<UsageInfo | null>(null);
   const [pendingText, setPendingText] = useState<string>("");
-  const [pwaGatePassed, setPwaGatePassed] = useState(false);
-
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const isStandalone =
-        window.matchMedia("(display-mode: standalone)").matches ||
-        (window.navigator as unknown as { standalone?: boolean }).standalone === true ||
-        sessionStorage.getItem("banza-pwa-passed") === "true";
-      if (isStandalone) {
-        setPwaGatePassed(true);
-      }
-    }
-  }, []);
 
   // État de la boîte modale de conversion Guest -> Compte
   const [limitModalOpen, setLimitModalOpen] = useState(false);
@@ -428,19 +414,6 @@ export default function ChatShell() {
       <div className="flex h-dvh items-center justify-center bg-canvas">
         <div className="h-8 w-8 animate-spin rounded-full border-[3px] border-accent/25 border-t-accent" />
       </div>
-    );
-  }
-
-  if (!pwaGatePassed) {
-    return (
-      <PWAInstallGate
-        onInstalledOrBypass={() => {
-          if (typeof window !== "undefined") {
-            sessionStorage.setItem("banza-pwa-passed", "true");
-          }
-          setPwaGatePassed(true);
-        }}
-      />
     );
   }
 
