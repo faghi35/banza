@@ -3,11 +3,8 @@
 /.pnp
 .pnp.js
 
-# next.js
-/.next/
-/out/
-
-# production
+# build & production
+/dist
 /build
 
 # misc
@@ -24,7 +21,7 @@ yarn-error.log*
 .env*.local.*
 .env.production.local
 
-# fichiers de test / traces locales (ne jamais publier)
+# fichiers de test / traces locales
 cookie.txt
 conv.json
 msg.json
@@ -34,7 +31,8 @@ resolve.err
 build*.log
 server.log
 *.jar
+nvimg_*
 
 # typescript
 *.tsbuildinfo
-next-env.d.ts
+*.timestamp-*.mjs

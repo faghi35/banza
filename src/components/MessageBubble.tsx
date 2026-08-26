@@ -1,5 +1,3 @@
-"use client";
-
 import { useEffect, useRef, useState } from "react";
 import { BrandMark } from "./BrandLogo";
 import MarkdownRenderer from "./MarkdownRenderer";

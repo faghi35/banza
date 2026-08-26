@@ -1,5 +1,3 @@
-"use client";
-
 // ============================================================
 // Branding Banza AI — Logos officiels du dossier /public
 // Palette stricte : Bleu foncé, Noir, Blanc

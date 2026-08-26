@@ -1,8 +1,5 @@
-"use client";
-
 import { useEffect, useState } from "react";
-import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { Link, useLocation, useNavigate, Outlet } from "react-router-dom";
 import { BrandLogo } from "@/components/BrandLogo";
 import ThemeToggle from "@/components/ThemeToggle";
 import {
@@ -29,9 +26,10 @@ const NAV = [
   { to: "/admin/logs", label: "Journal / Logs", icon: IconLogs },
 ];
 
-export default function AdminLayout({ children }: { children: React.ReactNode }) {
-  const router = useRouter();
-  const pathname = usePathname();
+export default function AdminLayout() {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const pathname = location.pathname;
   const [stage, setStage] = useState<Stage>("checking");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -50,7 +48,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     try {
       await authApi.logout();
     } finally {
-      router.replace("/login");
+      navigate("/login", { replace: true });
     }
   }
 
@@ -71,8 +69,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             L&apos;administration de Banza AI est réservée aux administrateurs autorisés.
           </p>
           <div className="mt-6 flex flex-col gap-2.5">
-            <Link href="/login" className="btn-primary w-full justify-center py-2.5">Se connecter</Link>
-            <Link href="/" className="btn-ghost w-full justify-center py-2.5">Retour au chat</Link>
+            <Link to="/login" className="btn-primary w-full justify-center py-2.5">Se connecter</Link>
+            <Link to="/" className="btn-ghost w-full justify-center py-2.5">Retour au chat</Link>
           </div>
         </div>
       </main>
@@ -88,7 +86,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             Votre compte ne dispose pas des droits administrateur nécessaires.
           </p>
           <div className="mt-6">
-            <Link href="/" className="btn-primary w-full justify-center py-2.5">
+            <Link to="/" className="btn-primary w-full justify-center py-2.5">
               Retour à l&apos;application
             </Link>
           </div>
@@ -105,7 +103,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         return (
           <Link
             key={n.to}
-            href={n.to}
+            to={n.to}
             onClick={() => setMobileMenuOpen(false)}
             className={`nav-item ${active ? "active" : ""}`}
           >
@@ -130,7 +128,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           >
             <IconMenu width={20} height={20} />
           </button>
-          <Link href="/" className="flex items-center gap-2" aria-label="Banza AI — accueil">
+          <Link to="/" className="flex items-center gap-2" aria-label="Banza AI — accueil">
             <BrandLogo height={26} />
             <span className="rounded-md border border-accent/30 bg-accent-soft px-1.5 py-0.5 text-[10.5px] font-bold uppercase tracking-wider text-accent">
               Admin
@@ -139,7 +137,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         </div>
 
         <div className="flex items-center gap-2">
-          <Link href="/" className="btn-subtle py-1.5 px-3 text-xs font-semibold">
+          <Link to="/" className="btn-subtle py-1.5 px-3 text-xs font-semibold">
             Ouvrir le Chat
           </Link>
           <ThemeToggle />
@@ -189,7 +187,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
         {/* Contenu principal */}
         <main className="flex-1 overflow-y-auto px-4 py-6 sm:px-8 sm:py-8">
-          <div className="mx-auto max-w-5xl">{children}</div>
+          <div className="mx-auto max-w-5xl">
+            <Outlet />
+          </div>
         </main>
       </div>
     </div>

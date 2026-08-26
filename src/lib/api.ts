@@ -19,10 +19,13 @@ import { getGuestToken, saveGuestToken } from "./auth-gate";
 export type { ChatSource, UsageInfo };
 
 // URL de base de l'API.
-//  - Dev (avec .env.local) : http://localhost/banza-ai-api (appel direct)
-//  - Prod (sans valeur)    : "" → URLs relatives /api/... relayées par le
-//    proxy Next/Vercel (next.config.mjs → BACKEND_ORIGIN → backend PHP).
-export const API_URL = (process.env.NEXT_PUBLIC_API_URL ?? "").replace(/\/+$/, "");
+//  - Dev (avec .env.local) : http://localhost/banza-ai-api (appel direct si spécifié, sinon proxy local /api/...)
+//  - Prod (sans valeur)    : "" → URLs relatives /api/... relayées vers le backend PHP.
+export const API_URL = (
+  (typeof import.meta !== "undefined" && import.meta.env
+    ? (import.meta.env.VITE_API_URL as string | undefined)
+    : "") ?? ""
+).replace(/\/+$/, "");
 
 export class ApiError extends Error {
   status: number;

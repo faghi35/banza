@@ -1,5 +1,3 @@
-"use client";
-
 import { useEffect, useState } from "react";
 import { IconLogs } from "@/components/icons";
 import { adminApi, type ActivityLogRow } from "@/lib/api";

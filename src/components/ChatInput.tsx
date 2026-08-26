@@ -1,5 +1,3 @@
-"use client";
-
 import { KeyboardEvent, useEffect, useRef, useState } from "react";
 import { IconPaperclip, IconSend, IconStop } from "./icons";
 

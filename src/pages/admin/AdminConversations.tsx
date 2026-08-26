@@ -1,5 +1,3 @@
-"use client";
-
 import { useEffect, useState } from "react";
 import { IconChat, IconSearch } from "@/components/icons";
 import { conversationsApi } from "@/lib/api";

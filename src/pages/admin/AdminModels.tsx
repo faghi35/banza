@@ -1,5 +1,3 @@
-"use client";
-
 import { useCallback, useEffect, useState } from "react";
 import { IconAlert, IconCheck, IconCpu, IconPlus, IconX } from "@/components/icons";
 import { llmModelsApi, type LlmModelRow } from "@/lib/api";
@@ -119,7 +117,7 @@ export default function AdminModels() {
     }
   }
 
-return (
+  return (
     <div>
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
@@ -216,7 +214,8 @@ return (
           </div>
         </div>
       )}
-{/* Tableau des modèles */}
+
+      {/* Tableau des modèles */}
       <div className="mt-5 card overflow-x-auto">
         {!rows ? (
           <p className="px-6 py-10 text-center text-sm text-ink-3">Chargement du catalogue…</p>

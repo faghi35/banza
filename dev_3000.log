@@ -406,3 +406,11 @@ Error: socket hang up
 <w>  at file G:\Users\FAGHI CHOLA\banza-ai\node_modules\next\dist\build\webpack\loaders\next-route-loader\index.js
 <w>  at resolve commonjs G:\Users\FAGHI CHOLA\banza-ai\node_modules\next\dist\build\webpack\loaders\next-route-loader\index.js
  ✓ Compiled in 4.4s (743 modules)
+ ✓ Compiled in 3s (743 modules)
+ ✓ Compiled in 714ms (743 modules)
+ ✓ Compiled in 758ms (743 modules)
+ ✓ Compiled in 1803ms (743 modules)
+ ✓ Compiled in 967ms (727 modules)
+ ✓ Compiled in 651ms (727 modules)
+ ✓ Compiled in 480ms (727 modules)
+<w> [webpack.cache.PackFileCacheStrategy] Caching failed for pack: Error: ENOENT: no such file or directory, rename 'G:\Users\FAGHI CHOLA\banza-ai\.next\cache\webpack\client-development\0.pack.gz_' -> 'G:\Users\FAGHI CHOLA\banza-ai\.next\cache\webpack\client-development\0.pack.gz'

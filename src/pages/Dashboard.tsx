@@ -1,7 +1,5 @@
-"use client";
-
 import { useEffect, useState } from "react";
-import Link from "next/link";
+import { Link } from "react-router-dom";
 import { BrandLogo } from "@/components/BrandLogo";
 import ThemeToggle from "@/components/ThemeToggle";
 import {
@@ -115,15 +113,15 @@ export default function DashboardPage() {
       <div aria-hidden="true" className="pointer-events-none fixed inset-x-0 top-0 h-80 bg-[radial-gradient(60%_100%_at_50%_0%,rgb(var(--accent)/0.12),transparent)]" />
       <div className="relative mx-auto max-w-5xl px-5 py-6 sm:px-8">
         <header className="flex items-center justify-between gap-3 border-b border-line/60 pb-5">
-          <Link href="/" className="flex items-center" aria-label="Banza AI — accueil">
+          <Link to="/" className="flex items-center" aria-label="Banza AI — accueil">
             <BrandLogo height={28} />
           </Link>
           <nav className="flex items-center gap-2">
-            <Link href="/" className="btn-subtle gap-2 py-2 px-3.5 text-xs font-semibold">
+            <Link to="/" className="btn-subtle gap-2 py-2 px-3.5 text-xs font-semibold">
               <IconChat width={15} height={15} />
               Ouvrir le Chat
             </Link>
-            <Link href="/settings" className="icon-btn text-ink-2 hover:bg-surface-2" aria-label="Paramètres">
+            <Link to="/settings" className="icon-btn text-ink-2 hover:bg-surface-2" aria-label="Paramètres">
               <IconSettings width={18} height={18} />
             </Link>
             <ThemeToggle />
@@ -154,7 +152,7 @@ export default function DashboardPage() {
               : "Bienvenue sur votre espace Banza AI. Suivez votre activité et reprenez facilement vos conversations."}
           </p>
           <div className="mt-6 flex flex-col items-center justify-center gap-2.5 sm:flex-row">
-            <Link href="/" className="btn-primary gap-2 px-6 py-2.5 shadow-sm">
+            <Link to="/" className="btn-primary gap-2 px-6 py-2.5 shadow-sm">
               <IconPlus width={16} height={16} />
               Nouvelle discussion
             </Link>
@@ -184,7 +182,7 @@ export default function DashboardPage() {
         <section className="mt-10">
           <div className="mb-4 flex items-center justify-between">
             <h2 className="text-base font-bold tracking-tight text-ink">Conversations récentes</h2>
-            <Link href="/" className="inline-flex items-center gap-1 text-[13px] font-semibold text-accent hover:underline">
+            <Link to="/" className="inline-flex items-center gap-1 text-[13px] font-semibold text-accent hover:underline">
               <span>Voir dans le chat</span>
               <IconArrowRight width={14} height={14} />
             </Link>
@@ -199,7 +197,7 @@ export default function DashboardPage() {
               <p className="mt-1 max-w-xs text-[13px] text-ink-3">
                 Lancez votre première discussion depuis le chat.
               </p>
-              <Link href="/" className="btn-soft mt-4 gap-2 px-4 py-2 text-xs">
+              <Link to="/" className="btn-soft mt-4 gap-2 px-4 py-2 text-xs">
                 <span>Commencer</span>
                 <IconArrowRight width={14} height={14} />
               </Link>
@@ -208,7 +206,7 @@ export default function DashboardPage() {
             <ul className="space-y-2.5">
               {items.slice(0, 6).map((c) => (
                 <li key={c.id}>
-                  <Link href="/" className="card flex items-center justify-between px-5 py-3.5 transition hover:border-accent hover:bg-accent-soft/40">
+                  <Link to="/" className="card flex items-center justify-between px-5 py-3.5 transition hover:border-accent hover:bg-accent-soft/40">
                     <div className="min-w-0 flex-1">
                       <p className="truncate text-sm font-semibold text-ink">{c.title}</p>
                       <p className="mt-0.5 text-[11.5px] text-ink-3">{formatDate(c.updatedAt)}</p>
@@ -231,8 +229,8 @@ export default function DashboardPage() {
                 pour débloquer 200 messages quotidiens et synchroniser votre historique sur tous vos appareils.
               </p>
               <div className="mt-5 flex flex-col gap-2.5 sm:flex-row">
-                <Link href="/register" className="btn-primary px-5 py-2.5">Créer un compte gratuit</Link>
-                <Link href="/login" className="btn-subtle px-5 py-2.5">Se connecter</Link>
+                <Link to="/register" className="btn-primary px-5 py-2.5">Créer un compte gratuit</Link>
+                <Link to="/login" className="btn-subtle px-5 py-2.5">Se connecter</Link>
               </div>
             </div>
           </section>
@@ -245,7 +243,7 @@ export default function DashboardPage() {
               <p className="text-sm font-bold text-ink">Espace administration</p>
               <p className="text-[12.5px] text-ink-3">Statistiques, utilisateurs, sessions invités et modèles IA.</p>
             </div>
-            <Link href="/admin" className="btn-subtle gap-2 py-2 text-xs font-semibold">
+            <Link to="/admin" className="btn-subtle gap-2 py-2 text-xs font-semibold">
               <IconDashboard width={15} height={15} />
               Ouvrir l&apos;Admin
             </Link>

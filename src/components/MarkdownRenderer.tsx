@@ -1,5 +1,3 @@
-"use client";
-
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { useState } from "react";
@@ -74,7 +72,6 @@ export default function MarkdownRenderer({ content }: { content: string }) {
           },
           img({ src, alt }) {
             return (
-              // eslint-disable-next-line @next/next/no-img-element
               <img src={src} alt={alt ?? ""} className="max-w-full rounded-xl my-3.5 border border-line" loading="lazy" />
             );
           },

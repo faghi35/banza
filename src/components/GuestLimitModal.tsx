@@ -1,7 +1,5 @@
-"use client";
-
-import Link from "next/link";
 import { useEffect } from "react";
+import { Link } from "react-router-dom";
 import { BrandLogo } from "./BrandLogo";
 import {
   IconArrowRight,
@@ -140,7 +138,7 @@ export default function GuestLimitModal({
         {/* Boutons d'action */}
         <div className="relative mt-7 flex flex-col gap-2.5 pt-2">
           <Link
-            href="/register"
+            to="/register"
             onClick={onClose}
             className="btn-primary w-full justify-center gap-2 py-3.5 text-[15px] font-bold shadow-md shadow-accent/20"
           >
@@ -149,7 +147,7 @@ export default function GuestLimitModal({
           </Link>
 
           <Link
-            href="/login"
+            to="/login"
             onClick={onClose}
             className="btn-subtle w-full justify-center py-3 text-[14px] font-semibold"
           >

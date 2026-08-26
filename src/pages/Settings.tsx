@@ -1,7 +1,5 @@
-"use client";
-
 import { useEffect, useState } from "react";
-import Link from "next/link";
+import { Link } from "react-router-dom";
 import { BrandLogo } from "@/components/BrandLogo";
 import ThemeToggle from "@/components/ThemeToggle";
 import { IconChevronRight, IconShield, IconUser } from "@/components/icons";
@@ -24,11 +22,11 @@ export default function SettingsPage() {
     <main className="min-h-dvh bg-canvas">
       <div className="mx-auto max-w-3xl px-5 py-6 sm:px-8">
         <header className="flex items-center justify-between border-b border-line/60 pb-4">
-          <Link href="/" className="flex items-center" aria-label="Banza AI — accueil">
+          <Link to="/" className="flex items-center" aria-label="Banza AI — accueil">
             <BrandLogo height={28} />
           </Link>
           <nav className="flex items-center gap-2">
-            <Link href="/" className="btn-subtle py-1.5 px-3.5 text-xs font-semibold">Chat</Link>
+            <Link to="/" className="btn-subtle py-1.5 px-3.5 text-xs font-semibold">Chat</Link>
             <ThemeToggle />
           </nav>
         </header>
@@ -71,7 +69,7 @@ export default function SettingsPage() {
                     <p className="text-sm text-ink-2">
                       Vous naviguez actuellement en mode invité. Créez un compte pour synchroniser et sécuriser votre historique.
                     </p>
-                    <Link href="/register" className="btn-primary py-2.5 px-4 text-xs">
+                    <Link to="/register" className="btn-primary py-2.5 px-4 text-xs">
                       Créer un compte gratuit
                     </Link>
                   </div>
@@ -113,7 +111,7 @@ export default function SettingsPage() {
 function Row({ label, desc, to, last }: { label: string; desc: string; to: string; last?: boolean }) {
   return (
     <Link
-      href={to}
+      to={to}
       className={`flex items-center justify-between gap-3 rounded-xl px-4 py-3 transition hover:bg-surface-2 ${last ? "" : "border-b border-line/40"}`}
     >
       <div className="min-w-0">

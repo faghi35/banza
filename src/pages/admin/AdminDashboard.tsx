@@ -1,13 +1,10 @@
-"use client";
-
 import { useEffect, useState } from "react";
-import Link from "next/link";
+import { Link } from "react-router-dom";
 import {
   IconActivity,
   IconAlert,
   IconArrowUpRight,
   IconChat,
-  IconCheck,
   IconCpu,
   IconSparkles,
   IconUsers,
@@ -158,7 +155,7 @@ export default function AdminDashboard() {
         <IconCpu width={24} height={24} className={stats?.ai === "configured" ? "text-success" : "text-warning"} />
       </div>
 
-      {/* ─── AI Performance ─── */}
+      {/* AI Performance */}
       <div className="mt-4 card p-5">
         <div className="flex items-center justify-between">
           <h2 className="text-base font-semibold text-ink">⚡ AI Performance &amp; Latence</h2>
@@ -243,7 +240,7 @@ export default function AdminDashboard() {
       {/* Raccourcis d'administration */}
       <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
         <Link
-          href="/admin/users"
+          to="/admin/users"
           className="card flex items-center justify-between p-4 transition hover:border-accent hover:bg-accent-soft/30"
         >
           <div>
@@ -253,7 +250,7 @@ export default function AdminDashboard() {
           <IconArrowUpRight width={16} height={16} className="text-ink-3" />
         </Link>
         <Link
-          href="/admin/models"
+          to="/admin/models"
           className="card flex items-center justify-between p-4 transition hover:border-accent hover:bg-accent-soft/30"
         >
           <div>

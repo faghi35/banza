@@ -1,5 +1,3 @@
-"use client";
-
 import { useCallback, useEffect, useState } from "react";
 import { IconSearch } from "@/components/icons";
 import { adminApi } from "@/lib/api";
@@ -30,8 +28,7 @@ export default function AdminUsers() {
   useEffect(() => {
     const t = setTimeout(() => load(query.trim()), query ? 300 : 0);
     return () => clearTimeout(t);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [query]);
+  }, [query, load]);
 
   async function act(id: number, patch: { role?: "user" | "admin"; status?: "active" | "suspended" }) {
     setBusyId(id);

@@ -1,7 +1,5 @@
-"use client";
-
-import Link from "next/link";
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { BrandLogo, UserAvatar } from "./BrandLogo";
 import ThemeToggle from "./ThemeToggle";
 import {
@@ -87,7 +85,7 @@ export default function Sidebar({
     <div className="flex h-full flex-col bg-surface/95 backdrop-blur-xl border-r border-line">
       {/* En-tête Sidebar avec Logo officiel */}
       <div className="flex items-center justify-between px-4 py-3.5 border-b border-line/60">
-        <Link href="/" className="shrink-0 flex items-center" aria-label="Banza — accueil">
+        <Link to="/" className="shrink-0 flex items-center" aria-label="Banza — accueil">
           <BrandLogo height={26} />
         </Link>
         <div className="flex items-center gap-1">
@@ -269,13 +267,13 @@ export default function Sidebar({
 
             <div className="mt-2.5 flex flex-col gap-1.5">
               <Link
-                href="/register"
+                to="/register"
                 className="btn-primary w-full justify-center py-2 text-xs font-bold shadow-sm"
               >
                 Créer un compte
               </Link>
               <Link
-                href="/login"
+                to="/login"
                 className="btn-subtle w-full justify-center py-1.5 text-xs font-medium text-ink-2"
               >
                 Se connecter
@@ -312,14 +310,14 @@ export default function Sidebar({
               </div>
               <div className="flex items-center gap-0.5">
                 <Link
-                  href="/dashboard"
+                  to="/dashboard"
                   className="rounded-lg p-1.5 text-ink-3 hover:bg-surface hover:text-ink transition"
                   title="Tableau de bord"
                 >
                   <IconDashboard width={15} height={15} />
                 </Link>
                 <Link
-                  href="/settings"
+                  to="/settings"
                   className="rounded-lg p-1.5 text-ink-3 hover:bg-surface hover:text-ink transition"
                   title="Paramètres"
                 >

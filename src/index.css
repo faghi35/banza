@@ -89,7 +89,6 @@
     background-attachment: fixed;
   }
 
-
   ::selection {
     background: rgb(var(--accent) / 0.30);
     color: rgb(var(--ink));

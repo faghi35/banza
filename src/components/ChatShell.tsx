@@ -1,8 +1,5 @@
-"use client";
-
-import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { BrandLogo } from "./BrandLogo";
 import ChatInput from "./ChatInput";
 import GuestLimitModal from "./GuestLimitModal";
@@ -57,7 +54,7 @@ function dedupeMessages<T extends { id?: string | number; role: string; content:
 }
 
 export default function ChatShell() {
-  const router = useRouter();
+  const navigate = useNavigate();
   const [user, setUser] = useState<User | null>(null);
   const [items, setItems] = useState<ConversationItem[]>([]);
   const [activeId, setActiveId] = useState<string | null>(null);
@@ -399,9 +396,9 @@ export default function ChatShell() {
         setActiveConversation(null);
         setMessages([]);
       });
-      router.replace("/");
+      navigate("/", { replace: true });
     }
-  }, [router, setActiveConversation]);
+  }, [navigate, setActiveConversation]);
 
   const handleRegenerate = useCallback(() => {
     if (generating) return;
@@ -452,7 +449,7 @@ export default function ChatShell() {
               <IconMenu width={20} height={20} />
             </button>
 
-            <Link href="/" className="flex items-center">
+            <Link to="/" className="flex items-center">
               <BrandLogo height={24} className="hidden md:flex" />
             </Link>
 
@@ -491,7 +488,7 @@ export default function ChatShell() {
             </button>
 
             <Link
-              href="/dashboard"
+              to="/dashboard"
               className="hidden items-center gap-1.5 rounded-xl border border-line bg-surface px-3 py-1.5 text-[12.5px] font-medium text-ink-2 shadow-sm transition hover:border-accent hover:text-ink md:flex"
             >
               <span>Tableau de bord</span>
@@ -542,7 +539,7 @@ export default function ChatShell() {
               <p className="text-[11.5px] text-ink-3">
                 Mode invité actif ({usage?.used ?? 0}/{usage?.limit ?? 10} messages) —{" "}
                 <Link
-                  href="/register"
+                  to="/register"
                   className="font-semibold text-accent hover:underline"
                 >
                   Créez un compte gratuit
