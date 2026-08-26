@@ -238,25 +238,15 @@ export default function ChatShell() {
       lastUserMsgRef.current = trimmed;
 
       const convId = activeId ? Number(activeId) : null;
-      // Ajout du message utilisateur dans la liste — la bulle assistant
-      // est créée uniquement quand le streaming commence (onDelta/onMeta).
-      // On l'ajoute ici avec un marqueur streaming pour l'affichage du spinner.
       setMessages((prev) => [
         ...prev,
         { role: "user", content: trimmed },
+        { role: "assistant", content: "", sources: [] },
       ]);
 
       streamingRef.current = true;
-      let assistantStarted = false;
       const controller = new AbortController();
       abortRef.current = controller;
-
-      const ensureAssistantBubble = () => {
-        if (!assistantStarted) {
-          assistantStarted = true;
-          setMessages((prev) => [...prev, { role: "assistant", content: "", sources: [] }]);
-        }
-      };
 
       let hasError = false;
 
@@ -266,7 +256,6 @@ export default function ChatShell() {
           convId,
           {
             onMeta: ({ conversation_id, usage: metaUsage }) => {
-              ensureAssistantBubble();
               setActiveConversation(String(conversation_id));
               setSearching(false);
               if (metaUsage) setUsage(metaUsage);
@@ -280,7 +269,6 @@ export default function ChatShell() {
                 return next;
               }),
             onDelta: (delta) => {
-              ensureAssistantBubble();
               deltaBufferRef.current += delta;
               if (flushRafRef.current === null) {
                 flushRafRef.current = requestAnimationFrame(() => {
@@ -360,6 +348,18 @@ export default function ChatShell() {
             return next;
           });
         }
+
+        // Si une erreur est survenue et que la bulle assistant est restée vide, la nettoyer
+        if (hasError) {
+          setMessages((prev) => {
+            const last = prev[prev.length - 1];
+            if (last?.role === "assistant" && !last.content.trim()) {
+              return prev.slice(0, -1);
+            }
+            return prev;
+          });
+        }
+
         streamingRef.current = false;
         setGenerating(false);
         setSearching(false);
