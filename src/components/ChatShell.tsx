@@ -11,6 +11,7 @@ import {
   IconGlobe,
   IconMenu,
   IconPlus,
+  IconRefresh,
   IconSparkles,
 } from "./icons";
 import {
@@ -27,6 +28,12 @@ import {
   requiresAuthentication,
   savePendingMessage,
 } from "@/lib/auth-gate";
+import {
+  normalizeApiError,
+  normalizeStreamError,
+  devLog,
+  type NormalizedError,
+} from "@/lib/errors";
 import type {
   AuthFeature,
   ChatMessage,
@@ -61,8 +68,10 @@ export default function ChatShell() {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [generating, setGenerating] = useState(false);
   const [ready, setReady] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [appError, setAppError] = useState<NormalizedError | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  // Dernier message utilisateur — permet le réessai sans dupliquer l'historique
+  const lastUserMsgRef = useRef<string | null>(null);
   const [usage, setUsage] = useState<UsageInfo | null>(null);
   const [pendingText, setPendingText] = useState<string>("");
 
@@ -134,7 +143,8 @@ export default function ChatShell() {
       })
       .catch((e) => {
         if (cancelled) return;
-        setError(e instanceof ApiError ? e.message : "Erreur de connexion à Banza.");
+        devLog("init session", e);
+        setAppError(normalizeApiError(e));
       })
       .finally(() => {
         if (!cancelled) setReady(true);
@@ -161,7 +171,8 @@ export default function ChatShell() {
         setMessages(dedupeMessages(conversation.messages));
       })
       .catch((e) => {
-        setError(e instanceof ApiError ? e.message : "Impossible de charger la conversation.");
+        devLog("load conversation", e);
+        setAppError(normalizeApiError(e));
       });
   }, [activeId]);
 
@@ -221,20 +232,33 @@ export default function ChatShell() {
         return;
       }
 
-      setError(null);
+      setAppError(null);
       setGenerating(true);
       userStopRef.current = false;
+      lastUserMsgRef.current = trimmed;
 
       const convId = activeId ? Number(activeId) : null;
+      // Ajout du message utilisateur dans la liste — la bulle assistant
+      // est créée uniquement quand le streaming commence (onDelta/onMeta).
+      // On l'ajoute ici avec un marqueur streaming pour l'affichage du spinner.
       setMessages((prev) => [
         ...prev,
         { role: "user", content: trimmed },
-        { role: "assistant", content: "", sources: [] },
       ]);
 
       streamingRef.current = true;
+      let assistantStarted = false;
       const controller = new AbortController();
       abortRef.current = controller;
+
+      const ensureAssistantBubble = () => {
+        if (!assistantStarted) {
+          assistantStarted = true;
+          setMessages((prev) => [...prev, { role: "assistant", content: "", sources: [] }]);
+        }
+      };
+
+      let hasError = false;
 
       try {
         await streamChat(
@@ -242,6 +266,7 @@ export default function ChatShell() {
           convId,
           {
             onMeta: ({ conversation_id, usage: metaUsage }) => {
+              ensureAssistantBubble();
               setActiveConversation(String(conversation_id));
               setSearching(false);
               if (metaUsage) setUsage(metaUsage);
@@ -255,6 +280,7 @@ export default function ChatShell() {
                 return next;
               }),
             onDelta: (delta) => {
+              ensureAssistantBubble();
               deltaBufferRef.current += delta;
               if (flushRafRef.current === null) {
                 flushRafRef.current = requestAnimationFrame(() => {
@@ -275,38 +301,47 @@ export default function ChatShell() {
             onDone: ({ usage: doneUsage }) => {
               if (doneUsage) setUsage(doneUsage);
             },
-            onError: (message, code, errUsage) => {
+            onError: (rawMessage, code, errUsage) => {
+              hasError = true;
+              devLog("SSE error event", { rawMessage, code });
               if (errUsage) setUsage(errUsage);
               if (code === "GUEST_LIMIT_REACHED") {
                 savePendingMessage(trimmed);
                 setPendingText(trimmed);
                 setModalConfig({
                   title: "Limite invité atteinte",
-                  description: message,
+                  description:
+                    "Vous avez atteint la limite d'utilisation gratuite en mode invité. Créez gratuitement votre compte pour continuer.",
                   featureGate: false,
                 });
                 setLimitModalOpen(true);
               } else {
-                setError(message);
+                setAppError(normalizeStreamError(rawMessage, code));
               }
             },
           },
           controller.signal
         );
       } catch (e) {
+        hasError = true;
         if ((e as Error).name !== "AbortError") {
-          const apiErr = e as ApiError;
-          if (apiErr.code === "GUEST_LIMIT_REACHED") {
+          devLog("streamChat catch", e);
+          const normalized = normalizeApiError(e);
+          if (normalized.code === "GUEST_LIMIT_REACHED") {
+            const apiErr = e as ApiError;
             savePendingMessage(trimmed);
             setPendingText(trimmed);
             setModalConfig({
               title: "Limite invité atteinte",
-              description: apiErr.message,
+              description:
+                apiErr.message.includes("invité")
+                  ? apiErr.message
+                  : "Vous avez atteint la limite d'utilisation gratuite en mode invité. Créez gratuitement votre compte pour continuer.",
               featureGate: false,
             });
             setLimitModalOpen(true);
           } else {
-            setError(apiErr.message ?? "Impossible de contacter Banza.");
+            setAppError(normalized);
           }
         }
       } finally {
@@ -331,7 +366,7 @@ export default function ChatShell() {
         abortRef.current = null;
 
         const finalConvId = activeIdRef.current;
-        if (finalConvId && !userStopRef.current) {
+        if (!hasError && finalConvId && !userStopRef.current) {
           try {
             const { conversation } = await conversationsApi.get(Number(finalConvId));
             setMessages(dedupeMessages(conversation.messages));
@@ -339,7 +374,9 @@ export default function ChatShell() {
             /* ignore */
           }
         }
-        refreshConversations().catch(() => undefined);
+        if (!hasError) {
+          refreshConversations().catch(() => undefined);
+        }
       }
     },
     [isGuest, usage, activeId, generating, refreshConversations, setActiveConversation]
@@ -349,8 +386,24 @@ export default function ChatShell() {
     if (generating) handleStop();
     setActiveConversation(null);
     setMessages([]);
-    setError(null);
+    setAppError(null);
+    lastUserMsgRef.current = null;
   }, [generating, handleStop, setActiveConversation]);
+
+  const handleRetry = useCallback(() => {
+    const msg = lastUserMsgRef.current;
+    if (!msg || generating) return;
+    // Supprime le dernier message utilisateur de l'historique visuel
+    // pour éviter le doublon lors du réessai
+    setMessages((prev) => {
+      const lastUser = [...prev].reverse().findIndex((m) => m.role === "user");
+      if (lastUser === -1) return prev;
+      const idx = prev.length - 1 - lastUser;
+      return prev.slice(0, idx);
+    });
+    setAppError(null);
+    handleSend(msg);
+  }, [generating, handleSend]);
 
   const handleRename = useCallback(
     async (id: string, newTitle: string) => {
@@ -361,7 +414,11 @@ export default function ChatShell() {
           prev.map((c) => (c.id === id ? { ...c, title: newTitle.trim() } : c))
         );
       } catch {
-        setError("Impossible de renommer la conversation.");
+        setAppError({
+          code: "SERVER_ERROR",
+          userMessage: "Impossible de renommer la conversation. Veuillez réessayer.",
+          retryable: false,
+        });
       }
     },
     []
@@ -372,7 +429,11 @@ export default function ChatShell() {
       try {
         await conversationsApi.remove(Number(id));
       } catch {
-        setError("Impossible de supprimer la conversation.");
+        setAppError({
+          code: "SERVER_ERROR",
+          userMessage: "Impossible de supprimer la conversation. Veuillez réessayer.",
+          retryable: false,
+        });
         return;
       }
       setItems((prev) => prev.filter((c) => c.id !== id));
@@ -428,7 +489,7 @@ export default function ChatShell() {
           usage={usage}
           onSelect={(id) => {
             setActiveConversation(id);
-            setError(null);
+            setAppError(null);
           }}
           onNew={handleNew}
           onRename={handleRename}
@@ -549,12 +610,34 @@ export default function ChatShell() {
             </div>
           )}
 
-          {/* Affichage d'erreur */}
-          {error && (
+          {/* Bannière d'erreur système — distincte des réponses LLM */}
+          {appError && (
             <div className="mx-auto mb-2 w-full max-w-3xl px-4 sm:px-6">
-              <p role="alert" className="rounded-2xl border border-danger/30 bg-danger/10 px-4 py-2.5 text-sm text-danger shadow-sm">
-                {error}
-              </p>
+              <div
+                role="alert"
+                className="flex items-start justify-between gap-3 rounded-2xl border border-danger/30 bg-danger/10 px-4 py-3 shadow-sm"
+              >
+                <div className="flex min-w-0 flex-col gap-0.5">
+                  <p className="text-[12px] font-semibold uppercase tracking-wider text-danger/70">
+                    Erreur système
+                  </p>
+                  <p className="text-sm font-medium text-danger">
+                    {appError.userMessage}
+                  </p>
+                </div>
+                {appError.retryable && (
+                  <button
+                    type="button"
+                    onClick={handleRetry}
+                    disabled={generating}
+                    className="flex shrink-0 items-center gap-1.5 rounded-xl border border-danger/30 bg-danger/10 px-3 py-1.5 text-xs font-semibold text-danger transition hover:bg-danger/20 disabled:opacity-40"
+                    aria-label="Réessayer la dernière requête"
+                  >
+                    <IconRefresh width={13} height={13} />
+                    Réessayer
+                  </button>
+                )}
+              </div>
             </div>
           )}
 

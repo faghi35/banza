@@ -11,6 +11,7 @@ import {
 } from "@/components/icons";
 import { adminApi, orchestrationApi, type OrchestrationStats } from "@/lib/api";
 import type { AdminStats } from "@/lib/api";
+import { normalizeApiError, devLog } from "@/lib/errors";
 
 function PerfBadge({ ms, good, warn }: { ms: number | null; good: number; warn: number }) {
   if (ms === null) return <span className="text-[13px] font-medium text-ink-3">—</span>;
@@ -27,7 +28,10 @@ export default function AdminDashboard() {
     adminApi
       .stats()
       .then(({ stats: s }) => setStats(s))
-      .catch((e) => setError(e instanceof Error ? e.message : "Erreur de chargement."));
+      .catch((e) => {
+        devLog("admin stats", e);
+        setError(normalizeApiError(e).userMessage);
+      });
     orchestrationApi
       .get()
       .then(({ stats: o }) => setOrch(o))

@@ -241,15 +241,12 @@ export async function streamChat(
     throw new ApiError("Impossible de contacter Banza AI. Veuillez vérifier votre connexion.", 0);
   }
 
-  // Erreur métier : réponse JSON classique (401, 403 quota, 429, 502…)
+  // Erreur métier : réponse JSON classique ou code HTTP d'erreur (401, 403, 429, 500, 502, 503…)
   const contentType = res.headers.get("content-type") ?? "";
-  if (!contentType.includes("text/event-stream")) {
+  if (!res.ok || !contentType.includes("text/event-stream")) {
     const data = await res.json().catch(() => null);
-    const errorMsg = data?.error ?? "Impossible de contacter Banza AI. Veuillez réessayer.";
+    const errorMsg = data?.error ?? data?.message ?? `Erreur serveur (${res.status})`;
     const errorCode = data?.code;
-    const usage = data?.usage as UsageInfo | undefined;
-
-    handlers.onError?.(errorMsg, errorCode, usage);
     throw new ApiError(errorMsg, res.status, errorCode, data);
   }
 

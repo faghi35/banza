@@ -4,6 +4,7 @@ import { BrandLogo } from "@/components/BrandLogo";
 import ThemeToggle from "@/components/ThemeToggle";
 import { authApi, ApiError } from "@/lib/api";
 import { getGuestToken } from "@/lib/auth-gate";
+import { normalizeApiError, devLog } from "@/lib/errors";
 
 export default function LoginPage() {
   const navigate = useNavigate();
@@ -29,7 +30,8 @@ export default function LoginPage() {
         navigate("/", { replace: true });
       }, 500);
     } catch (err) {
-      setError(err instanceof ApiError ? err.message : "Une erreur est survenue.");
+      devLog("login", err);
+      setError(normalizeApiError(err).userMessage);
       setLoading(false);
     }
   }

@@ -2,8 +2,9 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { BrandLogo } from "@/components/BrandLogo";
 import ThemeToggle from "@/components/ThemeToggle";
-import { authApi, ApiError } from "@/lib/api";
+import { authApi } from "@/lib/api";
 import { getGuestToken } from "@/lib/auth-gate";
+import { normalizeApiError, devLog } from "@/lib/errors";
 
 export default function RegisterPage() {
   const navigate = useNavigate();
@@ -34,7 +35,8 @@ export default function RegisterPage() {
         navigate("/", { replace: true });
       }, 500);
     } catch (err) {
-      setError(err instanceof ApiError ? err.message : "Une erreur est survenue lors de la création du compte.");
+      devLog("register", err);
+      setError(normalizeApiError(err).userMessage);
       setLoading(false);
     }
   }

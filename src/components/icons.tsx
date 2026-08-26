@@ -1,5 +1,3 @@
-"use client";
-
 // Collection d'icônes Banza AI — SVG minimalistes (stroke 1.75, 24×24)
 
 import type { SVGProps } from "react";
