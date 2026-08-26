@@ -18,13 +18,15 @@ import { getGuestToken, saveGuestToken } from "./auth-gate";
 // Ré-export pour les composants qui typent leurs handlers de streaming.
 export type { ChatSource, UsageInfo };
 
-// URL de base de l'API.
-//  - Dev (avec .env.local) : http://localhost/banza-ai-api (appel direct si spécifié, sinon proxy local /api/...)
-//  - Prod (sans valeur)    : "" → URLs relatives /api/... relayées vers le backend PHP.
+// URL de base de l'API officielle Banza AI.
+// En production (Vercel) comme en appel direct : https://banza-ai.onekana-agency.com
+// En dev local : peut être surchargé par VITE_API_URL via .env.local
+const OFFICIAL_API_URL = "https://banza-ai.onekana-agency.com";
+
 export const API_URL = (
-  (typeof import.meta !== "undefined" && import.meta.env
-    ? (import.meta.env.VITE_API_URL as string | undefined)
-    : "") ?? ""
+  (typeof import.meta !== "undefined" && import.meta.env?.VITE_API_URL
+    ? String(import.meta.env.VITE_API_URL).trim()
+    : "") || OFFICIAL_API_URL
 ).replace(/\/+$/, "");
 
 export class ApiError extends Error {
