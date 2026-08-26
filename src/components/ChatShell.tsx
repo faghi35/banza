@@ -547,14 +547,6 @@ export default function ChatShell() {
             >
               <IconPlus width={18} height={18} />
             </button>
-
-            <Link
-              to="/dashboard"
-              className="hidden items-center gap-1.5 rounded-xl border border-line bg-surface px-3 py-1.5 text-[12.5px] font-medium text-ink-2 shadow-sm transition hover:border-accent hover:text-ink md:flex"
-            >
-              <span>Tableau de bord</span>
-              <IconArrowUpRight width={14} height={14} className="text-ink-3" />
-            </Link>
           </header>
 
           {/* Corps de conversation */}
