@@ -1,3 +1,4 @@
+
 // ============================================================
 // Banza AI — Service API centralisé
 // TOUS les appels HTTP vers le backend PHP passent par ici.
@@ -263,35 +264,11 @@ export async function streamChat(
       if (line.startsWith("event:")) event = line.slice(6).trim();
       else if (line.startsWith("data:")) dataLines.push(line.slice(5).trim());
     }
-
-    let payload: Record<string, unknown> | null = null;
-    if (dataLines.length > 0) {
-      try {
-        payload = JSON.parse(dataLines.join("\n"));
-      } catch {
-        payload = null;
-      }
-    } else {
-      // Cas où le backend envoie un JSON direct sans préfixe "data:" (ex: erreur LLM PHP)
-      const trimmed = raw.trim();
-      if (trimmed.startsWith("{") && trimmed.endsWith("}")) {
-        try {
-          payload = JSON.parse(trimmed);
-        } catch {
-          payload = null;
-        }
-      }
-    }
-
-    if (!payload) return;
-
-    // Détection d'une erreur applicative ou refus LLM dans le stream
-    if (event === "error" || payload.error || payload.success === false) {
-      const errMsg = String(
-        payload.error ?? payload.message ?? "Le modèle IA a rencontré un problème."
-      );
-      const errCode = String(payload.code ?? "");
-      handlers.onError?.(errMsg, errCode, payload.usage as UsageInfo | undefined);
+    if (!dataLines.length) return;
+    let payload: Record<string, unknown>;
+    try {
+      payload = JSON.parse(dataLines.join("\n"));
+    } catch {
       return;
     }
 
@@ -301,6 +278,13 @@ export async function streamChat(
         break;
       case "delta":
         handlers.onDelta(String(payload.text ?? ""));
+        break;
+      case "error":
+        handlers.onError?.(
+          String(payload.message ?? payload.error ?? "Erreur inconnue."),
+          String(payload.code ?? ""),
+          payload.usage as UsageInfo | undefined
+        );
         break;
       case "searching":
         handlers.onSearching?.(String(payload.label ?? "Banza cherche des informations à jour…"));
@@ -318,12 +302,7 @@ export async function streamChat(
 
   while (true) {
     const { done, value } = await reader.read();
-    if (done) {
-      if (buffer.trim()) {
-        processEvent(buffer.trim());
-      }
-      break;
-    }
+    if (done) break;
     buffer += decoder.decode(value, { stream: true });
     let idx;
     while ((idx = buffer.indexOf("\n\n")) !== -1) {

@@ -11,6 +11,7 @@ import AdminConversations from "@/pages/admin/AdminConversations";
 import AdminModels from "@/pages/admin/AdminModels";
 import AdminSettings from "@/pages/admin/AdminSettings";
 import AdminLogs from "@/pages/admin/AdminLogs";
+import AdminDiagnostics from "@/pages/admin/AdminDiagnostics";
 
 export default function App() {
   return (
@@ -25,6 +26,7 @@ export default function App() {
       {/* Espace d'administration Banza AI */}
       <Route path="/admin" element={<AdminLayout />}>
         <Route index element={<AdminDashboard />} />
+        <Route path="diagnostics" element={<AdminDiagnostics />} />
         <Route path="users" element={<AdminUsers />} />
         <Route path="conversations" element={<AdminConversations />} />
         <Route path="models" element={<AdminModels />} />

@@ -1,0 +1,19 @@
+HTTP/1.1 422 Unprocessable Entity
+Connection: Keep-Alive
+Keep-Alive: timeout=5, max=100
+X-Powered-By: PHP/8.1.34
+Access-Control-Allow-Methods: GET, POST, PATCH, PUT, DELETE, OPTIONS
+Access-Control-Allow-Headers: Content-Type, Accept, X-Requested-With, X-Guest-Token
+Access-Control-Max-Age: 86400
+set-cookie: banza_session=d2jrcnftrfsdvdcjff3fskno7p; expires=Fri, 28-Aug-2026 06:40:09 GMT; Max-Age=86400; path=/; secure; HttpOnly; SameSite=Lax
+Expires: Thu, 19 Nov 1981 08:52:00 GMT
+Pragma: no-cache
+set-cookie: banza_guest_token=d1161a6dddf731b6f0f9fa7b0d39e6610042d26e8262bf7f7b9b664fb183198e; expires=Thu, 03-Sep-2026 06:40:09 GMT; Max-Age=604800; path=/; secure; HttpOnly; SameSite=Lax
+Content-Type: application/json; charset=utf-8
+Cache-Control: no-store
+Content-Length: 62
+Date: Thu, 27 Aug 2026 06:40:09 GMT
+Server: LiteSpeed
+alt-svc: h3=":443"; ma=2592000, h3-29=":443"; ma=2592000, h3-Q050=":443"; ma=2592000, h3-Q046=":443"; ma=2592000, h3-Q043=":443"; ma=2592000, quic=":443"; ma=2592000; v="43,46"
+
+{"success":false,"error":"Le message ne peut pas être vide."}

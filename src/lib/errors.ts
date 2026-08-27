@@ -193,7 +193,17 @@ export function normalizeStreamError(
     };
   }
 
-  if (code === "AI_PROVIDER_ERROR" || rawLower.includes("fournisseur") || rawLower.includes("provider") || rawLower.includes("nvidia") || rawLower.includes("bad gateway")) {
+  if (
+    code === "AI_PROVIDER_ERROR" ||
+    rawLower.includes("fournisseur") ||
+    rawLower.includes("provider") ||
+    rawLower.includes("nvidia") ||
+    rawLower.includes("openai") ||
+    rawLower.includes("bad gateway") ||
+    rawLower.includes("modèle") ||
+    rawLower.includes("refusé") ||
+    rawLower.includes("model")
+  ) {
     return {
       code: "AI_PROVIDER_ERROR",
       userMessage: USER_MESSAGES.AI_PROVIDER_ERROR,

@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate, Outlet } from "react-router-dom";
 import { BrandLogo } from "@/components/BrandLogo";
 import ThemeToggle from "@/components/ThemeToggle";
 import {
+  IconActivity,
   IconChat,
   IconCpu,
   IconDashboard,
@@ -19,6 +20,7 @@ type Stage = "checking" | "admin" | "guest" | "denied";
 
 const NAV = [
   { to: "/admin", label: "Tableau de bord", icon: IconDashboard, end: true },
+  { to: "/admin/diagnostics", label: "Test Connexion", icon: IconActivity },
   { to: "/admin/users", label: "Utilisateurs", icon: IconUsers },
   { to: "/admin/conversations", label: "Conversations", icon: IconChat },
   { to: "/admin/models", label: "Modèles IA", icon: IconCpu },
