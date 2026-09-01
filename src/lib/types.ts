@@ -59,6 +59,26 @@ export interface ChatSource {
   domain?: string | null;
 }
 
+/** Image trouvée sur le Web ou générée par IA. */
+export interface ChatImageItem {
+  id?: number;
+  url: string;
+  thumbnail_url?: string | null;
+  title?: string | null;
+  source_name?: string | null;
+  source_url?: string | null;
+  width?: number | null;
+  height?: number | null;
+}
+
+export interface ChatAttachment {
+  name: string;
+  size?: number;
+  type: "image" | "document";
+  url?: string;
+  previewUrl?: string;
+}
+
 export interface ChatMessage {
   id?: number;
   conversation_id?: number;
@@ -66,8 +86,14 @@ export interface ChatMessage {
   content: string;
   model?: string | null;
   created_at?: string;
+  /** Fichier ou image joint(e) par l'utilisateur. */
+  attachment?: ChatAttachment | null;
   /** Sources citées (recherche web) — vide si réponse sans recherche. */
   sources?: ChatSource[] | null;
+  /** Images Web trouvées lors d'une recherche d'images. */
+  images?: ChatImageItem[] | null;
+  /** Image générée par IA rattachée (le cas échéant). */
+  image?: ChatImageItem | null;
 }
 
 export interface HealthStatus {

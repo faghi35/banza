@@ -20,6 +20,7 @@ import {
   guestApi,
   streamChat,
   ApiError,
+  type ChatImageItem,
   type ChatSource,
 } from "@/lib/api";
 import {
@@ -90,8 +91,9 @@ export default function ChatShell() {
   const activeIdRef = useRef<string | null>(null);
   const streamingRef = useRef(false);
   const isGuest = !user;
-
+  const [attachedFile, setAttachedFile] = useState<File | null>(null);
   const [searching, setSearching] = useState(false);
+  const [searchingLabel, setSearchingLabel] = useState("Banza consulte des sources web récentes…");
   const deltaBufferRef = useRef<string>("");
   const flushRafRef = useRef<ReturnType<typeof requestAnimationFrame> | null>(null);
 
@@ -157,29 +159,40 @@ export default function ChatShell() {
 
   // Chargement des messages de la conversation active
   useEffect(() => {
-    if (streamingRef.current) return;
-    if (activeId === null) {
+    if (!activeId) {
       setMessages([]);
       return;
     }
-    const num = Number(activeId);
-    if (!Number.isFinite(num)) return;
-
+    let cancelled = false;
     conversationsApi
-      .get(num)
+      .get(Number(activeId))
       .then(({ conversation }) => {
-        setMessages(dedupeMessages(conversation.messages));
+        if (cancelled) return;
+        setMessages(conversation.messages ?? []);
       })
       .catch((e) => {
+        if (cancelled) return;
         devLog("load conversation", e);
         setAppError(normalizeApiError(e));
       });
+
+    return () => {
+      cancelled = true;
+    };
   }, [activeId]);
 
-  // Auto-scroll fluide
+  // Défilement automatique lors de nouveaux messages
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, searching]);
+
+  // Nettoyage au démontage
+  useEffect(() => {
+    return () => {
+      if (abortRef.current) abortRef.current.abort();
+      if (flushRafRef.current !== null) cancelAnimationFrame(flushRafRef.current);
+    };
+  }, []);
 
   const refreshConversations = useCallback(async () => {
     try {
@@ -189,6 +202,30 @@ export default function ChatShell() {
       /* ignore */
     }
   }, []);
+
+  const handleNewChat = useCallback(() => {
+    if (generating) return;
+    setActiveConversation(null);
+    setMessages([]);
+    setAppError(null);
+    setAttachedFile(null);
+    try {
+      window.history.pushState({}, "", "/chat");
+    } catch {
+      /* ignore */
+    }
+  }, [generating, setActiveConversation]);
+
+  const handleSelectConversation = useCallback((id: string) => {
+    setActiveConversation(id);
+    setAppError(null);
+    setAttachedFile(null);
+    try {
+      window.history.pushState({}, "", `/c/${id}`);
+    } catch {
+      /* ignore */
+    }
+  }, [setActiveConversation]);
 
   const handleStop = useCallback(() => {
     userStopRef.current = true;
@@ -214,9 +251,10 @@ export default function ChatShell() {
   }, []);
 
   const handleSend = useCallback(
-    async (text: string) => {
+    async (text: string, file?: File | null) => {
       const trimmed = text.trim();
-      if (!trimmed || generating) return;
+      const currentFile = file ?? attachedFile;
+      if ((!trimmed && !currentFile) || generating) return;
 
       // 1. Vérification préventive du quota invité
       if (isGuest && usage && usage.remaining <= 0 && usage.used >= usage.limit) {
@@ -237,10 +275,44 @@ export default function ChatShell() {
       userStopRef.current = false;
       lastUserMsgRef.current = trimmed;
 
+      // Traitement du fichier joint (image ou document)
+      let messagePayload = trimmed;
+      let userAttachment: ChatMessage["attachment"] = null;
+
+      if (currentFile) {
+        const isImage = currentFile.type.startsWith("image/");
+        const previewUrl = isImage ? URL.createObjectURL(currentFile) : undefined;
+        userAttachment = {
+          name: currentFile.name,
+          size: currentFile.size,
+          type: isImage ? "image" : "document",
+          previewUrl,
+        };
+
+        if (isImage) {
+          const prompt = trimmed || "Analyse cette image en détail et décris ce qu'elle contient.";
+          messagePayload = `[Image jointe : ${currentFile.name}]\n${prompt}`;
+        } else {
+          try {
+            const textContent = await currentFile.text();
+            const prompt = trimmed || "Analyse et résume ce document :";
+            const previewSnippet = textContent.slice(0, 8000);
+            messagePayload = `[Document joint : ${currentFile.name} (${(currentFile.size / 1024).toFixed(1)} Ko)]\n\`\`\`\n${previewSnippet}\n\`\`\`\n\n${prompt}`;
+          } catch {
+            messagePayload = `[Fichier joint : ${currentFile.name}]\n${trimmed || "Analyse ce fichier."}`;
+          }
+        }
+        setAttachedFile(null);
+      }
+
       const convId = activeId ? Number(activeId) : null;
       setMessages((prev) => [
         ...prev,
-        { role: "user", content: trimmed },
+        {
+          role: "user",
+          content: trimmed || (userAttachment ? `Fichier : ${userAttachment.name}` : ""),
+          attachment: userAttachment,
+        },
         { role: "assistant", content: "", sources: [] },
       ]);
 
@@ -252,7 +324,7 @@ export default function ChatShell() {
 
       try {
         await streamChat(
-          trimmed,
+          messagePayload,
           convId,
           {
             onMeta: ({ conversation_id, usage: metaUsage }) => {
@@ -260,12 +332,22 @@ export default function ChatShell() {
               setSearching(false);
               if (metaUsage) setUsage(metaUsage);
             },
-            onSearching: () => setSearching(true),
+            onSearching: (label) => {
+              if (label) setSearchingLabel(label);
+              setSearching(true);
+            },
             onSources: (sources: ChatSource[]) =>
               setMessages((prev) => {
                 const next = [...prev];
                 const last = next[next.length - 1];
                 if (last?.role === "assistant") next[next.length - 1] = { ...last, sources };
+                return next;
+              }),
+            onImages: (images: ChatImageItem[]) =>
+              setMessages((prev) => {
+                const next = [...prev];
+                const last = next[next.length - 1];
+                if (last?.role === "assistant") next[next.length - 1] = { ...last, images };
                 return next;
               }),
             onDelta: (delta) => {
@@ -303,6 +385,14 @@ export default function ChatShell() {
                   featureGate: false,
                 });
                 setLimitModalOpen(true);
+              } else if (code === "FEATURE_PLAN_REQUIRED") {
+                setModalConfig({
+                  title: "Abonnement Pro requis",
+                  description:
+                    rawMessage || "Cette fonctionnalité avancée (génération d'images par IA) nécessite un abonnement Banza Pro.",
+                  featureGate: true,
+                });
+                setLimitModalOpen(true);
               } else {
                 setAppError(normalizeStreamError(rawMessage, code));
               }
@@ -326,6 +416,15 @@ export default function ChatShell() {
                   ? apiErr.message
                   : "Vous avez atteint la limite d'utilisation gratuite en mode invité. Créez gratuitement votre compte pour continuer.",
               featureGate: false,
+            });
+            setLimitModalOpen(true);
+          } else if (normalized.code === "FEATURE_PLAN_REQUIRED") {
+            const apiErr = e as ApiError;
+            setModalConfig({
+              title: "Abonnement Pro requis",
+              description:
+                apiErr.message || "La génération d'images par IA nécessite un abonnement Banza Pro.",
+              featureGate: true,
             });
             setLimitModalOpen(true);
           } else {
@@ -581,7 +680,7 @@ export default function ChatShell() {
             <div className="mx-auto mb-2 w-full max-w-3xl px-4 sm:px-6">
               <p className="flex items-center justify-center gap-2 rounded-2xl border border-accent/25 bg-accent-soft px-4 py-2.5 text-[13.5px] font-semibold text-accent shadow-sm animate-pulse-soft">
                 <IconGlobe width={16} height={16} className="animate-spin-slow" />
-                Banza consulte des sources web récentes…
+                {searchingLabel}
               </p>
             </div>
           )}
@@ -638,6 +737,9 @@ export default function ChatShell() {
             onStop={handleStop}
             generating={generating}
             initialValue={pendingText}
+            isGuest={isGuest}
+            attachedFile={attachedFile}
+            onFileSelect={setAttachedFile}
             onAttachmentClick={() => triggerFeatureGate("advanced_files")}
           />
         </div>

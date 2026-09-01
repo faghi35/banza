@@ -6,6 +6,7 @@
 
 import type {
   AuthMeResponse,
+  ChatImageItem,
   ChatMessage,
   ChatSource,
   Conversation,
@@ -17,7 +18,7 @@ import type {
 import { getGuestToken, saveGuestToken } from "./auth-gate";
 
 // Ré-export pour les composants qui typent leurs handlers de streaming.
-export type { ChatSource, UsageInfo };
+export type { ChatImageItem, ChatSource, UsageInfo };
 
 // URL de base de l'API officielle Banza AI.
 // En production (Vercel) comme en appel direct : https://banza-ai.onekana-agency.com
@@ -194,21 +195,26 @@ export interface ChatStreamHandlers {
     model: string;
     request_id?: string;
     used_search?: boolean;
+    used_image_search?: boolean;
     authenticated?: boolean;
     guest?: boolean;
     usage?: UsageInfo;
   }) => void;
   onDelta: (text: string) => void;
   onError?: (message: string, code?: string, usage?: UsageInfo) => void;
-  /** Début d'une recherche web (indicateur « Banza cherche… »). */
+  /** Début d'une recherche web ou d'images (indicateur « Banza cherche… »). */
   onSearching?: (label: string) => void;
   /** Sources citées reçues (avant/avec la réponse). */
   onSources?: (sources: ChatSource[]) => void;
+  /** Images Web reçues en streaming. */
+  onImages?: (images: ChatImageItem[]) => void;
   onDone?: (payload: {
     conversation_id: number;
     request_id?: string;
     assistant_message?: ChatMessage;
     sources?: ChatSource[];
+    images?: ChatImageItem[];
+    type?: string;
     perf?: ChatPerfMetadata;
     authenticated?: boolean;
     guest?: boolean;
@@ -292,6 +298,11 @@ export async function streamChat(
       case "sources":
         handlers.onSources?.(
           Array.isArray(payload.sources) ? (payload.sources as ChatSource[]) : []
+        );
+        break;
+      case "images":
+        handlers.onImages?.(
+          Array.isArray(payload.images) ? (payload.images as ChatImageItem[]) : []
         );
         break;
       case "done":

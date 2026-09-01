@@ -1,9 +1,11 @@
 import { useEffect, useRef, useState } from "react";
 import { BrandMark } from "./BrandLogo";
 import MarkdownRenderer from "./MarkdownRenderer";
+import ImageGallery from "./ImageGallery";
 import {
   IconCheck,
   IconCopy,
+  IconPaperclip,
   IconRefresh,
   IconThumbsDown,
   IconThumbsUp,
@@ -45,6 +47,22 @@ export default function MessageBubble({ message, streaming = false, onRegenerate
     return (
       <div className="mx-auto mt-2 flex max-w-full w-full justify-end px-2 sm:px-4" ref={ref}>
         <div className="bubble-in max-w-[85%] rounded-2xl rounded-tr-sm bg-accent px-4 py-2.5 text-[15px] leading-relaxed text-white shadow-card break-words sm:max-w-[75%] font-normal select-text">
+          {message.attachment && (
+            <div className="mb-2 overflow-hidden rounded-xl border border-white/20 bg-black/15 p-2 backdrop-blur-sm">
+              {message.attachment.type === "image" && (message.attachment.previewUrl || message.attachment.url) ? (
+                <img
+                  src={message.attachment.previewUrl || message.attachment.url}
+                  alt={message.attachment.name}
+                  className="max-h-56 w-full rounded-lg object-cover"
+                />
+              ) : (
+                <div className="flex items-center gap-2 text-xs font-medium text-white/95">
+                  <IconPaperclip width={15} height={15} className="shrink-0" />
+                  <span className="truncate">{message.attachment.name}</span>
+                </div>
+              )}
+            </div>
+          )}
           {message.content}
         </div>
       </div>
@@ -123,6 +141,23 @@ export default function MessageBubble({ message, streaming = false, onRegenerate
           </div>
         ) : (
           <TypingIndicator />
+        )}
+
+        {/* Galerie de photos / images Web */}
+        {message.images && message.images.length > 0 && (
+          <ImageGallery images={message.images} />
+        )}
+
+        {/* Image générée par IA rattachée */}
+        {message.image && message.image.url && (
+          <div className="mt-3 overflow-hidden rounded-2xl border border-line bg-surface-2/60 p-3 shadow-sm">
+            <img
+              src={message.image.url}
+              alt={message.image.title || "Image générée par IA"}
+              className="max-h-[500px] w-full rounded-xl object-contain"
+              loading="lazy"
+            />
+          </div>
         )}
 
         {/* Citations / Sources Web */}

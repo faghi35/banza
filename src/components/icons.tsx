@@ -335,3 +335,17 @@ export const IconAudioLines = (p: IconProps) => (
     <path d="M2 10v3M6 6v11M10 3v18M14 8v8M18 5v13M22 10v3" />
   </svg>
 );
+
+export const IconImage = (p: IconProps) => (
+  <svg {...base(p)}>
+    <rect width="18" height="18" x="3" y="3" rx="2" ry="2" />
+    <circle cx="9" cy="9" r="2" />
+    <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" />
+  </svg>
+);
+
+export const IconChevronLeft = (p: IconProps) => (
+  <svg {...base(p)}>
+    <path d="m15 18-6-6 6-6" />
+  </svg>
+);

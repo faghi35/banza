@@ -15,6 +15,9 @@ export type AppErrorCode =
   | "RATE_LIMIT"          // Trop de requêtes (429)
   | "AI_PROVIDER_ERROR"   // Problème côté LLM provider (502)
   | "AI_SERVICE_UNAVAILABLE" // Service indisponible (503)
+  | "SEARCH_PROVIDER_UNAVAILABLE" // Moteur de recherche web indisponible
+  | "IMAGE_SEARCH_UNAVAILABLE"    // Recherche d'images web indisponible
+  | "FEATURE_PLAN_REQUIRED"       // Fonctionnalité nécessitant un plan supérieur
   | "SERVER_ERROR"        // Erreur interne serveur (500)
   | "AUTH_REQUIRED"       // Session expirée / non authentifié (401)
   | "FORBIDDEN"           // Accès refusé (403)
@@ -38,6 +41,12 @@ export const USER_MESSAGES: Record<AppErrorCode, string> = {
     "Banza AI rencontre temporairement un problème de traitement. Veuillez réessayer.",
   AI_SERVICE_UNAVAILABLE:
     "Banza AI est temporairement indisponible. Veuillez réessayer dans quelques instants.",
+  SEARCH_PROVIDER_UNAVAILABLE:
+    "Le moteur de recherche Web est temporairement indisponible. Veuillez réessayer dans un instant.",
+  IMAGE_SEARCH_UNAVAILABLE:
+    "Le service de recherche d'images est momentanément indisponible. Veuillez réessayer plus tard.",
+  FEATURE_PLAN_REQUIRED:
+    "Cette fonctionnalité nécessite un abonnement Banza Pro.",
   SERVER_ERROR:
     "Une erreur temporaire est survenue. Veuillez réessayer.",
   AUTH_REQUIRED:

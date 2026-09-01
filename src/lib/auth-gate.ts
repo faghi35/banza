@@ -61,11 +61,12 @@ export function requiresAuthentication(feature: AuthFeature): FeatureRequirement
     case "advanced_files":
       return {
         required: true,
-        title: "Analyse de fichiers volumineux",
-        description: "L'envoi et l'analyse approfondie de documents requiert un compte vérifié.",
+        title: "Pièces jointes & Analyse de fichiers",
+        description: "L'ajout de documents, images et fichiers pour analyse avec Banza AI nécessite un compte utilisateur.",
         benefits: [
-          "Traitement documentaire jusqu'à 50 Mo",
-          "Extraction et résumé automatisé",
+          "Analyse de documents (PDF, Word, TXT, CSV, JSON...)",
+          "Reconnaissance et analyse d'images par vision IA",
+          "Sauvegarde et historique complet de vos échanges",
         ],
       };
     case "personalization":
