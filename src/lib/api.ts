@@ -31,6 +31,44 @@ export const API_URL = (
     : "") || OFFICIAL_API_URL
 ).replace(/\/+$/, "");
 
+// Délais de sécurité : aucune requête ne doit laisser l'interface bloquée
+// sur un écran de chargement (spinner) indéfiniment. Si le backend ne répond
+// pas, on lève une erreur réseau claire et l'application bascule en mode
+// invité avec un message d'erreur plutôt qu'un chargement éternel.
+const DEFAULT_REQUEST_TIMEOUT_MS = 12000;
+const STREAM_FIRST_BYTE_TIMEOUT_MS = 15000;
+
+/**
+ * Prépare les paramètres de fetch avec un délai maximal.
+ * Le signal interne aborde la requête au bout du délai (ou si l'appelant
+ * annule via `externalSignal`) ; `exceeded` indique si le timeout interne
+ * est la cause de l'annulation.
+ */
+function timeoutFetchInit(
+  timeoutMs: number,
+  externalSignal?: AbortSignal | null
+): { signal: AbortSignal; exceeded: () => boolean; stop: () => void } {
+  const controller = new AbortController();
+  let timedOut = false;
+  const timer = setTimeout(() => {
+    timedOut = true;
+    controller.abort();
+  }, timeoutMs);
+  const onExternalAborted = () => controller.abort();
+  if (externalSignal) {
+    if (externalSignal.aborted) controller.abort();
+    else externalSignal.addEventListener("abort", onExternalAborted, { once: true });
+  }
+  return {
+    signal: controller.signal,
+    exceeded: () => timedOut,
+    stop: () => {
+      clearTimeout(timer);
+      if (externalSignal) externalSignal.removeEventListener("abort", onExternalAborted);
+    },
+  };
+}
+
 export class ApiError extends Error {
   status: number;
   code?: string;
@@ -66,17 +104,32 @@ async function request<T>(
 ): Promise<T> {
   let res: Response;
   const extraHeaders = (options.headers as Record<string, string>) || {};
+  const guarded = timeoutFetchInit(DEFAULT_REQUEST_TIMEOUT_MS, options.signal);
   try {
     res = await fetch(`${API_URL}${path}`, {
       credentials: "include", // cookies de session PHP + banza_guest_token
       headers: getRequestHeaders(extraHeaders),
       ...options,
+      signal: guarded.signal,
     });
-  } catch {
+  } catch (err) {
+    if (guarded.exceeded()) {
+      throw new ApiError(
+        "Impossible de contacter Banza AI : le serveur ne répond pas. Vérifiez votre connexion puis réessayez.",
+        0,
+        "NETWORK_ERROR"
+      );
+    }
+    if (options.signal?.aborted) {
+      // Annulation explicite de l'appelant : on re-propage l'erreur d'origine.
+      throw err;
+    }
     throw new ApiError(
       "Impossible de contacter Banza AI. Veuillez vérifier votre connexion.",
       0
     );
+  } finally {
+    guarded.stop();
   }
 
   const data = await res.json().catch(() => null);
@@ -231,6 +284,7 @@ export async function streamChat(
 ): Promise<void> {
   let res: Response;
   const guestToken = getGuestToken();
+  const guarded = timeoutFetchInit(STREAM_FIRST_BYTE_TIMEOUT_MS, signal);
 
   try {
     res = await fetch(`${API_URL}/api/chat`, {
@@ -243,11 +297,20 @@ export async function streamChat(
         request_id: requestId ?? undefined,
         guest_token: guestToken ?? undefined,
       }),
-      signal,
+      signal: guarded.signal,
     });
   } catch (e) {
+    if (guarded.exceeded()) {
+      throw new ApiError(
+        "Banza AI ne répond pas. Vérifiez votre connexion puis réessayez.",
+        0,
+        "NETWORK_ERROR"
+      );
+    }
     if ((e as Error).name === "AbortError") return;
     throw new ApiError("Impossible de contacter Banza AI. Veuillez vérifier votre connexion.", 0);
+  } finally {
+    guarded.stop();
   }
 
   // Erreur métier : réponse JSON classique ou code HTTP d'erreur (401, 403, 429, 500, 502, 503…)

@@ -1,0 +1,1 @@
+[2026-09-05T09:06:37.698Z] [HTTP] {"message":"serveur démarré","port":3000,"env":"development","version":"2.0.0","health":"http://localhost:3000/api/health"}

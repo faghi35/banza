@@ -21,6 +21,12 @@ yarn-error.log*
 .env*.local.*
 .env.production.local
 
+# Backend Node.js (api/)
+/api/node_modules
+/api/.env
+/api/.env.*
+!/api/.env.example
+
 # fichiers de test / traces locales
 cookie.txt
 conv.json

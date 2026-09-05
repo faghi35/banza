@@ -5,10 +5,12 @@ import path from "path";
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), "");
+  // Dev : le proxy `/api` pointe vers le backend Node/Express local (3000).
+  // Surcharge possible via BACKEND_ORIGIN (ex: pour tester contre le PHP).
   const backendOrigin =
     env.BACKEND_ORIGIN ||
     (mode === "development"
-      ? "http://localhost/banza-ai-api"
+      ? "http://localhost:3000"
       : "https://banza-ai.onekana-agency.com");
 
   return {
@@ -19,7 +21,7 @@ export default defineConfig(({ mode }) => {
       },
     },
     server: {
-      port: 3000,
+      port: 5173,
       proxy: {
         "/api": {
           target: backendOrigin,
